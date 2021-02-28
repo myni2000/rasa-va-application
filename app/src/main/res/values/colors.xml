@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="colorshape">#BCBABE</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="greenPrimary">#008000</color>
+
+    <color name="lightGreenA100">#CCFF90</color>
+    <color name="lightGreenA200">#B2FF59</color>
+    <color name="lightGreenA400">#76FF03</color>
+    <color name="lightGreenA700">#64DD17</color>
+
+    <color name="black100">#f5f5f5</color>
+    <color name="black200">#eeeeee</color>
+    <color name="black300">#e0e0e0</color>
+    <color name="black400">#bdbdbd</color>
+    <color name="black600">#757575</color>
+    <color name="black700">#616161</color>
+    <color name="black800">#424242</color>
+    <color name="black900">#212121</color>
+
+    <color name="brown700">#a77c66</color>
+    <color name="brown500">#c98942</color>
+    <color name="brown300">#ecc49c</color>
+
+    <color name="red100">#ffcdd2</color>
+    <color name="red200">#ef9a9a</color>
+    <color name="red300">#e57373</color>
+    <color name="red700">#D32F2F</color>
+    <color name="red800">#C62828</color>
+    <color name="red900">#B71C1C</color>
+
+    <color name="orange100">#ffe0b2</color>
+
+    <color name="redA700">#D50000</color>
+
+
+    <color name="yellowA50">#fffde7</color>
+    <color name="yellowA100">#FFFF8D</color>
+    <color name="yellowA200">#FFFF00</color>
+    <color name="yellowA400">#FFEA00</color>
+    <color name="yellowA500">#FFD600</color>
+    <color name="yellowA700">#ffd600</color>
+
+
+    <color name="amberA200">#ffd740</color>
+    <color name="amberA400">#ffc400</color>
+
+
+    <color name="yellowBackground">#fff7d6</color>
+    <color name="yellowHightline">#ffc582</color>
+
+
+    <color name="pink50">#fce4ec</color>
+
+    <color name="blue50">#E3F2FD</color>
+    <color name="blue100">#BBDEFB</color>
+    <color name="blue200">#90CAF9</color>
+    <color name="blue300">#64B5F6</color>
+    <color name="blue700">#1976d2</color>
+    <color name="blue800">#1565c0</color>
+    <color name="blue900">#0d47a1</color>
+
+    <color name="purple50">#F3E5F5</color>
+    <color name="purple100">#E1BEE7</color>
+    <color name="purple200">#CE93D8</color>
+    <color name="purple300">#BA68C8</color>
+    <color name="purple400">#AB47BC</color>
+    <color name="purple500">#9C27B0</color>
+    <color name="purple600">#8E24AA</color>
+
+
+    <color name="icActive">#FFFFFFFF</color>
+    <color name="icFocused">#DDFFFFFF</color>
+    <color name="icPressed">#AAFFFFFF</color>
+</resources>
