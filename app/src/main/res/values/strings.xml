@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DemoBankingBot</string>
+    <string name="description_image_view">Demo Image Description</string>
+</resources>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "78664492622",
+    "project_id": "texttospeech-303808",
+    "storage_bucket": "texttospeech-303808.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78664492622:android:51ac67dda7eead562c851f",
+        "android_client_info": {
+          "package_name": "com.myni.demobankingbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78664492622-om88k643d7g5mnocnetmevgmlsr0nast.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBInzJfeIBHQK-aF5i0H4G4ZSeQ1lL6AyQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78664492622-om88k643d7g5mnocnetmevgmlsr0nast.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
