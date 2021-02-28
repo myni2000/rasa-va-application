@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -70,28 +71,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             checkPermission();
         }
         findIds();
         addEvent();
-        //SavaDB();
-
     }
 
     private void addEvent() {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-
         final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE,"vi_VN");
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"vi_VN");
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,this.getPackageName());
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,this.getPackageName());
-
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
-
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle bundle) {
@@ -100,36 +95,35 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBeginningOfSpeech() {
+                if (txtquestion.getVisibility() == View.INVISIBLE)
+                    txtquestion.setVisibility(View.VISIBLE);
                 txtquestion.setText("");
-                txtquestion.setHint("Listening...");
+                txtquestion.setHint("Đang nghe...");
             }
-
             @Override
             public void onRmsChanged(float v) {
 
             }
-
             @Override
             public void onBufferReceived(byte[] bytes) {
 
             }
-
             @Override
             public void onEndOfSpeech() {
 
             }
-
             @Override
             public void onError(int i) {
 
             }
-
             @Override
             public void onResults(Bundle bundle) {
                 imgAsk.setImageResource(R.drawable.mic1);
                 ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 txtquestion.setText(data.get(0));
                 if (txtquestion.getText() != "") {
+                    txtAnswer.setText("");
+                    txtAnswer.setHint("FIBA đang trả lời...");
                     String msg = txtquestion.getText().toString();
                     OkHttpClient okHttpClient = new OkHttpClient();
                     Retrofit retrofit = new Retrofit.Builder()
@@ -142,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Please enter your query!", Toast.LENGTH_LONG).show();
                     } else {
                         //showTextView(msg, USER);
-                        txtAnswer.setHint("Fiba đang trả lời");
+                        txtAnswer.setHint("FIBA đang trả lời...");
                         ask = new ask("User", msg.toLowerCase());
                     }
                     Toast.makeText(MainActivity.this, "" + ask.getMessage(), Toast.LENGTH_LONG).show();
@@ -158,24 +152,8 @@ public class MainActivity extends AppCompatActivity {
                                 txtAnswer.setText(botResponse.getText());
                                 if(txtAnswer.getText()!="") {
                                     new TTS().execute();
-                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                    //Kết nối tới node có tên là contacts (node này do ta định nghĩa trong CSDL Firebase)
-                                    DatabaseReference myRef = database.getReference("Userutterance");
-
-                                    String uniqueID = UUID.randomUUID().toString();
-                                    String UserutteranceID = "user-" + uniqueID;
-
-                                    String question = txtquestion.getText().toString();
-                                    String answer = txtAnswer.getText().toString();
-                                    myRef.child(UserutteranceID).child("question").setValue(question);
-                                    myRef.child(UserutteranceID).child("answer").setValue(answer);
-                                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-                                    LocalDateTime now = LocalDateTime.now();
-                                    myRef.child(UserutteranceID).child("DateTime").setValue(dtf.format(now));
-                                    //System.out.println(dtf.format(now));
+                                    SaveDatabase();
                                 }
-
-
                             }
                         }
 
@@ -185,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
                             if(txtAnswer.getText()!="") {
                                 new TTS().execute();
-
+                                SaveDatabase();
                             }
                         }
 
@@ -194,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-
             @Override
             public void onPartialResults(Bundle bundle) {
 
@@ -205,15 +182,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
         progressDialog = new ProgressDialog(this);
         imgAsk.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+
                 if (event.getAction() == MotionEvent.ACTION_UP){
                     speechRecognizer.stopListening();
                 }
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    String text= (String) txtAnswer.getText();
+                    Log.i(text,text);
+                    if(text.equals("Hãy hỏi mình thứ gì đó !")==false)
+                    {
+                        googleCloudTTS.stop();
+                    }
                     imgAsk.setImageResource(R.drawable.mic2);
                     speechRecognizer.startListening(speechRecognizerIntent);
                 }
@@ -221,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
         ic_hint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,53 +216,41 @@ public class MainActivity extends AppCompatActivity {
                 lp.height = WindowManager.LayoutParams.MATCH_PARENT;
                 dialog.show();
                 dialog.getWindow().setAttributes(lp);
-
             }
         });
     }
 
-    private void SavaDB() {
-        try {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            //Kết nối tới node có tên là contacts (node này do ta định nghĩa trong CSDL Firebase)
-            DatabaseReference myRef = database.getReference("Userutterance");
-            String UserutteranceID="user";
-            String question = txtquestion.getText().toString();
-            String answer = txtAnswer.getText().toString();
-            myRef.child(UserutteranceID).child("question").setValue(question);
-            myRef.child(UserutteranceID).child("answer").setValue(answer);
-            finish();
-        }
-        catch (Exception ex)
-        {
-            Toast.makeText(this,"Error:"+ex.toString(),Toast.LENGTH_LONG).show();
-        }
-
+    private void SaveDatabase() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //Kết nối tới node có tên là contacts (node này do ta định nghĩa trong CSDL Firebase)
+        DatabaseReference myRef = database.getReference("Userutterance");
+        String uniqueID = UUID.randomUUID().toString();
+        String UserutteranceID = "user-" + uniqueID;
+        String question = txtquestion.getText().toString();
+        String answer = txtAnswer.getText().toString();
+        myRef.child(UserutteranceID).child("question").setValue(question);
+        myRef.child(UserutteranceID).child("answer").setValue(answer);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        myRef.child(UserutteranceID).child("DateTime").setValue(dtf.format(now));
     }
+
 
     class TTS extends AsyncTask<String, Void, Void>
     {
         private Exception exception;
-
-
         @Override
         protected Void doInBackground(String... strings) {
                 googleCloudTTS = GoogleCloudTTSFactory.create("AIzaSyC_XyFFv-2H9JTEuP6YFeuw4n3z0OxbFAo");
                 // Load google cloud VoicesList and select the languageCode and voiceName with index (0 ~ N).
                 VoicesList voicesList = googleCloudTTS.load();
-                String languageCode = voicesList.getLanguageCodes()[0];
-                String voiceName = voicesList.getVoiceNames(languageCode)[0];
+               // String languageCode = voicesList.getLanguageCodes()[0];
+                //String voiceName = voicesList.getVoiceNames(languageCode)[0];
                 googleCloudTTS.setVoiceSelectionParams(new VoiceSelectionParams("vi-VN", "vi-VN-Standard-A"))
                         .setAudioConfig(new AudioConfig(AudioEncoding.MP3, 1, 0));
-
-// start speak
-
+                // start speak
                 googleCloudTTS.start((String) txtAnswer.getText());
-
-
             return null;
-
-
         }
     }
 
@@ -303,15 +273,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void findIds() {
         txtquestion = findViewById(R.id.txtquestion);
         txtAnswer = findViewById(R.id.txtanswer);
         imgAsk = findViewById(R.id.imgAsk);
         ic_hint=findViewById(R.id.ic_hint);
     }
-
-
 }
 
 
